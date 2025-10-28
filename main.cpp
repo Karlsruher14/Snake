@@ -2,6 +2,7 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include "GetCellVertices.h"
 #include "Vec2.h"
 
@@ -11,18 +12,6 @@ void processInput(GLFWwindow *window);
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
-
-std::ifstream vertexFile("shaders/snake.vs");
-std::stringstream vertexStream;
-vertexStream << vertexFile.rdbuf();
-std::string vertexShaderCode = vertexStream.str();
-const char* vertexShaderSource = vertexShaderCode.c_str();
-
-std::ifstream fragmentFile("shaders/snake.fs");
-std::stringstream fragmentStream;
-fragmentStream << fragmentFile.rdbuf();
-std::string fragmentShaderCode = fragmentStream.str();
-const char* fragmentShaderSource = fragmentShaderCode.c_str();
 
 int main()
 {
@@ -50,7 +39,21 @@ int main()
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     
     
-    / build and compile our shader program
+    // build and compile our shader program
+    
+    
+    std::ifstream vertexFile("shaders/snake.vs");
+    std::stringstream vertexStream;
+    vertexStream << vertexFile.rdbuf();
+    std::string vertexShaderCode = vertexStream.str();
+    const char* vertexShaderSource = vertexShaderCode.c_str();
+
+    std::ifstream fragmentFile("shaders/snake.fs");
+    std::stringstream fragmentStream;
+    fragmentStream << fragmentFile.rdbuf();
+    std::string fragmentShaderCode = fragmentStream.str();
+    const char* fragmentShaderSource = fragmentShaderCode.c_str();
+
     // ------------------------------------
     // vertex shader
     unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
