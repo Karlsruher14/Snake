@@ -1,5 +1,8 @@
+#pragma once
+
 #include <iostream>
 #include <vector>
+#include "Vec2.h"
 
 std::vector<vec2> GetCellVertices(float x, float y, int SCRWIDTH, int SCRHEIGHT, float GRIDCOLS, float GRIDROWS)
 {
