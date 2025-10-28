@@ -11,7 +11,7 @@ void processInput(GLFWwindow *window);
 
 // settings
 const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
+const unsigned int SCR_HEIGHT = 800;
 
 int main()
 {
@@ -38,10 +38,15 @@ int main()
     glfwMakeContextCurrent(window);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
     
+        // glad: load all OpenGL function pointers
+    // ---------------------------------------
+    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+    {
+        std::cout << "Failed to initialize GLAD" << std::endl;
+        return -1;
+    }    
     
     // build and compile our shader program
-    
-    
     std::ifstream vertexFile("shaders/snake.vs");
     std::stringstream vertexStream;
     vertexStream << vertexFile.rdbuf();
@@ -93,15 +98,7 @@ int main()
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
-    // glad: load all OpenGL function pointers
-    // ---------------------------------------
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
-    {
-        std::cout << "Failed to initialize GLAD" << std::endl;
-        return -1;
-    }    
-
-        std::vector<vec2> Vertices = GetCellVertices(7, 10, 800, 800, 32, 32);
+        std::vector<vec2> Vertices = GetCellVertices(7, 10, SCR_WIDTH, SCR_HEIGHT, 32, 32);
         
         std::vector<float> flatVerts;
     for (auto& v : Vertices) 
