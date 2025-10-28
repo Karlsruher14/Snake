@@ -44,19 +44,44 @@ int main()
         return -1;
     }    
 
+        std::vector<vec2> Vertices = GetCellVertices(7, 10, 800, 800, 32, 32);
+        
+        std::vector<float> flatVerts;
+    for (auto& v : Vertices) 
+    {
+        flatVerts.push_back(v.x);
+        flatVerts.push_back(v.y);
+    }
+        
+        GLuint vao, vbo;
+        glGenVertexArrays(1, &vao);
+        glGenBuffers(1, &vbo);
+        
+        
+        glBindVertexArray(vao);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glBufferData(GL_ARRAY_BUFFER, flatVerts.size() * sizeof(float), flatVerts.data(), GL_STATIC_DRAW);
+        glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+        glEnableVertexAttribArray(0);
+        glBindVertexArray(0);
+
     // render loop
-    // -----------
+    // ---------------------------------------
     while (!glfwWindowShouldClose(window))
     {
         // input
-        // -----
+        // ---------------------------------------
         processInput(window);
-
+        
         // render
-        // ------
+        // ---------------------------------------
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-
+        
+        glBindVertexArray(vao);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+        glBindVertexArray(0);
+        
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         glfwSwapBuffers(window);
         glfwPollEvents();
