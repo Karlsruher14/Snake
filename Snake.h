@@ -9,7 +9,7 @@ class Snake
     private:
         std:::vector<vec2i> body;
         vec2i direction;
-        bool glow;
+        bool grow;
     
     public:
         Snake();
