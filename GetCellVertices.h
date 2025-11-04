@@ -6,11 +6,16 @@
 
 std::vector<vec2> GetCellVertices(float x, float y, int SCRWIDTH, int SCRHEIGHT, float GRIDCOLS, float GRIDROWS)
 {
-    float cellW = SCRWIDTH / GRIDCOLS;
-    float cellH = SCRHEIGHT / GRIDROWS;
+    float gap = 4.0f;
 
-    float pixelX = x * cellW;
-    float pixelY = y * cellH;
+    float fullCellW = SCRWIDTH / GRIDCOLS;
+    float fullCellH = SCRHEIGHT / GRIDROWS;
+
+    float cellW = fullCellW - gap;
+    float cellH = fullCellH - gap;
+
+    float pixelX = x * fullCellW + gap / 2.0f;
+    float pixelY = y * fullCellH + gap / 2.0f;
 
     float ndcX = (pixelX / SCRWIDTH) * 2 - 1;
     float ndcY = (pixelY / SCRHEIGHT) * 2 - 1;

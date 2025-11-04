@@ -28,7 +28,7 @@ int main()
 
     // glfw window creation
     // --------------------
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Snake", NULL, NULL);
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -36,16 +36,17 @@ int main()
         return -1;
     }
     glfwMakeContextCurrent(window);
+    glfwSwapInterval(0);
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-    
+
         // glad: load all OpenGL function pointers
     // ---------------------------------------
     if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
     {
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
-    }    
-    
+    }
+
     // build and compile our shader program
     std::ifstream vertexFile("shaders/snake.vs");
     std::stringstream vertexStream;
@@ -98,28 +99,36 @@ int main()
     glDeleteShader(vertexShader);
     glDeleteShader(fragmentShader);
 
-        std::vector<vec2> Vertices = GetCellVertices(7, 10, SCR_WIDTH, SCR_HEIGHT, 32, 32);
-        
-        std::vector<float> flatVerts;
-    for (auto& v : Vertices) 
+
+    std::vector<float> fieldVerts;
+    
+    for (int y = 0; y < 32; y++)
+{
+    for (int x = 0; x < 32; x++)
     {
-        flatVerts.push_back(v.x);
-        flatVerts.push_back(v.y);
-    }
+        std::vector<vec2> Vertices = GetCellVertices(x, y, SCR_WIDTH, SCR_HEIGHT, 32, 32);
         
+        for (auto& v : Vertices)
+        {
+            fieldVerts.push_back(v.x);
+            fieldVerts.push_back(v.y);
+        }
+    }
+}
+
         GLuint vao, vbo;
         glGenVertexArrays(1, &vao);
         glGenBuffers(1, &vbo);
-        
-        
+
+
         glBindVertexArray(vao);
         glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        glBufferData(GL_ARRAY_BUFFER, flatVerts.size() * sizeof(float), flatVerts.data(), GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, fieldVerts.size() * sizeof(float), fieldVerts.data(), GL_STATIC_DRAW);
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(0);
         glBindVertexArray(0);
-        
-        
+
+
     // render loop
     // ---------------------------------------
     while (!glfwWindowShouldClose(window))
@@ -127,17 +136,17 @@ int main()
         // input
         // ---------------------------------------
         processInput(window);
-        
+
         // render
         // ---------------------------------------
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-        
+
         glBindVertexArray(vao);
         glUseProgram(shaderProgram);
-        glDrawArrays(GL_TRIANGLES, 0, 6);
+        glDrawArrays(GL_TRIANGLES, 0, 32*32*6);
         glBindVertexArray(0);
-        
+
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         glfwSwapBuffers(window);
         glfwPollEvents();
