@@ -5,6 +5,7 @@
 #include <sstream>
 #include "GetCellVertices.h"
 #include "Vec2.h"
+#include "Snake.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow *window);
@@ -101,13 +102,13 @@ int main()
 
 
     std::vector<float> fieldVerts;
-    
+
     for (int y = 0; y < 32; y++)
 {
     for (int x = 0; x < 32; x++)
     {
         std::vector<vec2> Vertices = GetCellVertices(x, y, SCR_WIDTH, SCR_HEIGHT, 32, 32);
-        
+
         for (auto& v : Vertices)
         {
             fieldVerts.push_back(v.x);
@@ -127,6 +128,31 @@ int main()
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(0);
         glBindVertexArray(0);
+        
+        
+        Snake snake;
+        
+        std::vector<float> snakeVerts;
+    for (auto& cell : snake.getBody())
+    {
+        auto verts = GetCellVertices(cell.x, cell.y, SCR_WIDTH, SCR_HEIGHT, 32, 32);
+        for (auto& v : verts)
+        {
+            snakeVerts.push_back(v.x);
+            snakeVerts.push_back(v.y);
+        }
+    }
+    
+    GLuint snakeVAO, snakeVBO;
+    glGenVertexArrays(1, &snakeVAO);
+    glGenBuffers(1, &snakeVBO);
+
+    glBindVertexArray(snakeVAO);
+    glBindBuffer(GL_ARRAY_BUFFER, snakeVBO);
+    glBufferData(GL_ARRAY_BUFFER, snakeVerts.size() * sizeof(float), snakeVerts.data(), GL_DYNAMIC_DRAW);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    glBindVertexArray(0);
 
 
     // render loop
@@ -145,6 +171,11 @@ int main()
         glBindVertexArray(vao);
         glUseProgram(shaderProgram);
         glDrawArrays(GL_TRIANGLES, 0, 32*32*6);
+        glBindVertexArray(0);
+        
+        glUseProgram(shaderProgram);
+        glBindVertexArray(snakeVAO);
+        glDrawArrays(GL_TRIANGLES, 0, snake.getBody().size() * 6);
         glBindVertexArray(0);
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
