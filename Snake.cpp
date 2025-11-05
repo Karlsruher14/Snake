@@ -4,9 +4,8 @@
 #include "Vec2.h"
 #include "Snake.h"
 
-Snake::Snake() 
+Snake::Snake() : direction = vec2{1.0f,0.0f};
 {
-    direction = vec2{1.0f,0.0f};
     body.push_back(vec2{5.0f,5.0f});
     
 }
