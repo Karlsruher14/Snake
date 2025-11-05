@@ -7,16 +7,15 @@
 class Snake
 {
     private:
-        std:::vector<vec2i> body;
-        vec2i direction;
+        std::vector<vec2> body;
+        vec2 direction;
         bool grow;
     
     public:
         Snake();
         void move();
-        void move();
-        void setDirection(const vec2i& dir);
+        void setDirection(const vec2& dir);
         void growNext();
         bool checkCollision() const;
-        const std::vector<vec2i>& getBody() const;
+        const std::vector<vec2>& getBody() const;
 };

@@ -6,15 +6,15 @@
 
 Snake::Snake() 
 {
-    direction = vec2i{1,0};
-    body.push_back(vec2i{5,5});
+    direction = vec2{1.0f,0.0f};
+    body.push_back(vec2{5.0f,5.0f});
     
 }
 
 void Snake::move()
 {
-    vec2i head = body.front();
-    vec2i newHead = head + direction;
+    vec2 head = body.front();
+    vec2 newHead = head + direction;
     body.insert(body.begin(), newHead);
 
     if (!grow)
