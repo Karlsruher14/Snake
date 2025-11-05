@@ -49,13 +49,42 @@ int main()
     }
 
     // build and compile our shader program
-    std::ifstream vertexFile("shaders/snake.vs");
+    std::ifstream snakeVertexFile("shaders/snake.vs");
+    std::stringstream snakeVertexStream;
+    snakeVertexStream << snakeVertexFile.rdbuf();
+    std::string snakeVertexShaderCode = snakeVertexStream.str();
+    const char* snakeVertexShaderSource = snakeVertexShaderCode.c_str();
+
+    std::ifstream snakeFragmentFile("shaders/snake.fs");
+    std::stringstream snakeFragmentStream;
+    snakeFragmentStream << snakeFragmentFile.rdbuf();
+    std::string snakeFragmentShaderCode = snakeFragmentStream.str();
+    const char* snakeFragmentShaderSource = snakeFragmentShaderCode.c_str();
+
+    unsigned int snakeVertexShader = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(snakeVertexShader, 1, &snakeVertexShaderSource, NULL);
+    glCompileShader(snakeVertexShader);
+
+    unsigned int snakeFragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(snakeFragmentShader, 1, &snakeFragmentShaderSource, NULL);
+    glCompileShader(snakeFragmentShader);
+
+    unsigned int snakeShaderProgram = glCreateProgram();
+    glAttachShader(snakeShaderProgram, snakeVertexShader);
+    glAttachShader(snakeShaderProgram, snakeFragmentShader);
+    glLinkProgram(snakeShaderProgram);
+
+    glDeleteShader(snakeVertexShader);
+    glDeleteShader(snakeFragmentShader);
+    
+    
+    std::ifstream vertexFile("shaders/field.vs");
     std::stringstream vertexStream;
     vertexStream << vertexFile.rdbuf();
     std::string vertexShaderCode = vertexStream.str();
     const char* vertexShaderSource = vertexShaderCode.c_str();
 
-    std::ifstream fragmentFile("shaders/snake.fs");
+    std::ifstream fragmentFile("shaders/field.fs");
     std::stringstream fragmentStream;
     fragmentStream << fragmentFile.rdbuf();
     std::string fragmentShaderCode = fragmentStream.str();
@@ -87,14 +116,14 @@ int main()
         std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
     }
     // link shaders
-    unsigned int shaderProgram = glCreateProgram();
-    glAttachShader(shaderProgram, vertexShader);
-    glAttachShader(shaderProgram, fragmentShader);
-    glLinkProgram(shaderProgram);
+    unsigned int fieldShaderProgram = glCreateProgram();
+    glAttachShader(fieldShaderProgram, vertexShader);
+    glAttachShader(fieldShaderProgram, fragmentShader);
+    glLinkProgram(fieldShaderProgram);
     // check for linking errors
-    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+    glGetProgramiv(fieldShaderProgram, GL_LINK_STATUS, &success);
     if (!success) {
-        glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
+        glGetProgramInfoLog(fieldShaderProgram, 512, NULL, infoLog);
         std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
     }
     glDeleteShader(vertexShader);
@@ -128,10 +157,10 @@ int main()
         glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
         glEnableVertexAttribArray(0);
         glBindVertexArray(0);
-        
-        
+
+
         Snake snake;
-        
+
         std::vector<float> snakeVerts;
     for (auto& cell : snake.getBody())
     {
@@ -142,7 +171,7 @@ int main()
             snakeVerts.push_back(v.y);
         }
     }
-    
+
     GLuint snakeVAO, snakeVBO;
     glGenVertexArrays(1, &snakeVAO);
     glGenBuffers(1, &snakeVBO);
@@ -167,13 +196,13 @@ int main()
         // ---------------------------------------
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-
+        
+        glUseProgram(fieldShaderProgram);
         glBindVertexArray(vao);
-        glUseProgram(shaderProgram);
         glDrawArrays(GL_TRIANGLES, 0, 32*32*6);
         glBindVertexArray(0);
-        
-        glUseProgram(shaderProgram);
+
+        glUseProgram(snakeShaderProgram);
         glBindVertexArray(snakeVAO);
         glDrawArrays(GL_TRIANGLES, 0, snake.getBody().size() * 6);
         glBindVertexArray(0);
