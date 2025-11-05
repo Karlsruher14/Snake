@@ -13,6 +13,8 @@ void processInput(GLFWwindow *window);
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 800;
+float lastMoveTime = 0.0f;
+float moveInterval = 0.2f;
 
 int main()
 {
@@ -160,17 +162,7 @@ int main()
 
 
         Snake snake;
-
         std::vector<float> snakeVerts;
-    for (auto& cell : snake.getBody())
-    {
-        auto verts = GetCellVertices(cell.x, cell.y, SCR_WIDTH, SCR_HEIGHT, 32, 32);
-        for (auto& v : verts)
-        {
-            snakeVerts.push_back(v.x);
-            snakeVerts.push_back(v.y);
-        }
-    }
 
     GLuint snakeVAO, snakeVBO;
     glGenVertexArrays(1, &snakeVAO);
@@ -191,6 +183,29 @@ int main()
         // input
         // ---------------------------------------
         processInput(window);
+        
+        float currentTime = glfwGetTime();
+        
+        if (currentTime - lastMoveTime > moveInterval)
+        {
+        
+            snake.move();
+            lastMoveTime = currentTime;
+        }
+
+        snakeVerts.clear();
+        for (auto& cell : snake.getBody())
+        {
+            auto verts = GetCellVertices(cell.x, cell.y, SCR_WIDTH, SCR_HEIGHT, 32, 32);
+            for (auto& v : verts)
+            {
+                snakeVerts.push_back(v.x);
+                snakeVerts.push_back(v.y);
+            }
+        }
+        
+        glBindBuffer(GL_ARRAY_BUFFER, snakeVBO);
+        glBufferData(GL_ARRAY_BUFFER, snakeVerts.size() * sizeof(float), snakeVerts.data(), GL_DYNAMIC_DRAW);
 
         // render
         // ---------------------------------------
