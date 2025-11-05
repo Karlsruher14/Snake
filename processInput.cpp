@@ -1,0 +1,18 @@
+#include "processInput.h"
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+
+void processInput(GLFWwindow* window, Snake& snake)
+{
+    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, true);
+
+    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+        snake.setDirection({0.0f, 1.0f});
+    else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+        snake.setDirection({0.0f, -1.0f});
+    else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+        snake.setDirection({-1.0f, 0.0f});
+    else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+        snake.setDirection({1.0f, 0.0f});
+}

@@ -6,9 +6,9 @@
 #include "GetCellVertices.h"
 #include "Vec2.h"
 #include "Snake.h"
+#include "processInput.h"
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
-void processInput(GLFWwindow *window);
 
 // settings
 const unsigned int SCR_WIDTH = 800;
@@ -78,8 +78,8 @@ int main()
 
     glDeleteShader(snakeVertexShader);
     glDeleteShader(snakeFragmentShader);
-    
-    
+
+
     std::ifstream vertexFile("shaders/field.vs");
     std::stringstream vertexStream;
     vertexStream << vertexFile.rdbuf();
@@ -182,13 +182,13 @@ int main()
     {
         // input
         // ---------------------------------------
-        processInput(window);
-        
+        processInput(window, snake);
+
         float currentTime = glfwGetTime();
-        
+
         if (currentTime - lastMoveTime > moveInterval)
         {
-        
+
             snake.move();
             lastMoveTime = currentTime;
         }
@@ -203,7 +203,7 @@ int main()
                 snakeVerts.push_back(v.y);
             }
         }
-        
+
         glBindBuffer(GL_ARRAY_BUFFER, snakeVBO);
         glBufferData(GL_ARRAY_BUFFER, snakeVerts.size() * sizeof(float), snakeVerts.data(), GL_DYNAMIC_DRAW);
 
@@ -211,7 +211,7 @@ int main()
         // ---------------------------------------
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-        
+
         glUseProgram(fieldShaderProgram);
         glBindVertexArray(vao);
         glDrawArrays(GL_TRIANGLES, 0, 32*32*6);
@@ -229,12 +229,6 @@ int main()
 
     glfwTerminate();
     return 0;
-}
-
-void processInput(GLFWwindow *window)
-{
-    if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, true);
 }
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
